@@ -1,3 +1,3 @@
 # Weather API
 
-Helper classes for [http://openweathermap.org/API|OpenWeatherMap]
+Helper classes for [OpenWeatherMap](http://openweathermap.org/API)
