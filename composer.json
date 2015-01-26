@@ -6,5 +6,10 @@
 	"type": "project",
 	"require": {
 		"illuminate/cache": "*"
-	}
+	},
+  "autoload": {
+    "psr-0": {
+      "Tamarillo\\Weather": "src"
+    }
+  }
 }
