@@ -1,4 +1,4 @@
-<?php namespace Tamarillo\Weather;
+<?php namespace Weather;
 
 class Weather {
 

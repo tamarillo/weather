@@ -9,7 +9,7 @@
 	},
   "autoload": {
     "psr-0": {
-      "Tamarillo\\Weather": "src"
+      "Weather": "src"
     }
   }
 }
