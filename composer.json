@@ -5,6 +5,6 @@
 	"license": "MIT",
 	"type": "project",
 	"require": {
-		"illuminate/cache": "5.0.*@dev"
+		"illuminate/cache": "*"
 	}
 }
