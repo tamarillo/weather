@@ -1,0 +1,10 @@
+{
+	"name": "tamarillo/weather",
+	"description": "An OpenWeatherMap API helper for PHP.",
+	"keywords": ["dengophp", "tamarillo", "openweathermap"],
+	"license": "MIT",
+	"type": "project",
+	"require": {
+		"illuminate/cache": "5.0.*@dev"
+	},
+}
