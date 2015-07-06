@@ -8,8 +8,8 @@
 		"illuminate/cache": "*"
 	},
   "autoload": {
-    "psr-0": {
-      "Weather": "src"
+    "psr-4": {
+      "Tamarillo\\Weather\\": ""
     }
   }
 }
