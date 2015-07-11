@@ -4,4 +4,4 @@
 
 Helper classes for [OpenWeatherMap](http://openweathermap.org/API).
 
-This package was once part of the DengoCMS Framework. Now it's available on the Tamarillo project.
+This package was once part of the DengoCMS Framework. Now it's available on the [Tamarillo projects](https://github.com/tamarillo).
