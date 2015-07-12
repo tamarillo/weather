@@ -2,6 +2,8 @@
 
 namespace Tamarillo\Weather;
 
+use Illuminate\Support\Facades\Cache;
+
 /**
  * Class Weather
  * @package Tamarillo\Weather
@@ -13,6 +15,12 @@ class Weather
 	private static $apiUrl = 'http://api.openweathermap.org/data/2.5/forecast';
 	private $format;
 	private $defaultformat = '%oneLine%';
+
+
+	/**
+	 * @var string $dailyForecast API URL for daily forecast data.
+	 */
+	private $dailyForecast = "http://api.openweathermap.org/data/2.5/forecast/daily?";
 
 	public static function getWeather($search)
 	{
@@ -67,7 +75,8 @@ class Weather
 
 	private static function apiKey()
 	{
-		return \Config::get('admin.weather.key');
+		return '8bf3d1154e15c3edf7ff892291deb93a';
+		//return \Config::get('admin.weather.key');
 	}
 
 	public function __toString()
