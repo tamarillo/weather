@@ -2,19 +2,24 @@
 
 namespace Tamarillo\Weather;
 
-use Illuminate\Support\Facades\Cache;
-
 /**
  * Class Weather
  * @package Tamarillo\Weather
+ *
+ * @author Tobias Maxham
  */
 class Weather
 {
+	/**
+	 * The Copyright http://openweathermap.org/copyright.
+	 */
+	const COPYRIGHT = "Weather data from <a href=\"http://www.openweathermap.org\">OpenWeatherMap.org</a>";
 
-	private static $lat, $lon, $id, $name, $url, $data;
-	private static $apiUrl = 'http://api.openweathermap.org/data/2.5/forecast';
+	private $lat, $lon, $id, $name, $url, $data;
 	private $format;
 	private $defaultformat = '%oneLine%';
+
+	private $fetchHandler;
 
 
 	/**
@@ -22,61 +27,65 @@ class Weather
 	 */
 	private $dailyForecast = "http://api.openweathermap.org/data/2.5/forecast/daily?";
 
-	public static function getWeather($search)
-	{
-		if (is_array($search)) list(self::$lat, self::$lon) = $search;
-		elseif (is_int($search)) self::$id = $search;
-		else self::$name = $search;
-
-		return self::handleRequest();
-	}
-
 	/**
-	 * @return \Tamarillo\Weather\Weather
+	 * @var string $weeklyForecast API URL for weekly forecast data.
 	 */
-	private static function handleRequest()
-	{
-		self::buildUrl();
+	private $weeklyForecast = 'http://api.openweathermap.org/data/2.5/forecast';
 
-		if (!Cache::has('weather')) {
-			echo 'request';
-			self::$data = file_get_contents(self::$url);
-			Cache::add('weather', self::$data, 1440);
-		} else self::$data = Cache::get('weather');
-
-		$last = date('mdy', json_decode(self::$data)->list[0]->dt);
-		if (date('mdy') != $last) self::$data = file_get_contents(self::$url);
-
-		$weather = new Weather(self::$data);
-
-		self::$name = self::$id = self::$lat = self::$lon =
-		self::$data = self::$url = NULL;
-
-		return $weather;
+	public function __construct() {
+		$this->fetchHandler = new Fetcher();
 	}
 
-	private static function buildUrl()
+
+	public static function getWeather($search, $unit = 'metric', $nl = 'de', $appid = '')
 	{
-		self::$url = self::$apiUrl;
-		if (self::$lat) $param = array('lat' => self::$lat, 'lon' => self::$lon);
-		elseif (self::$name) $param = array('q' => self::$name);
+		$weather = new self;
+		return $weather->getWeatherData($search, $unit, $nl, $appid);
+	}
+
+	public function getWeatherData($search, $unit = 'metric', $nl = 'de', $appid = '')
+	{
+		$url = $this->buildRequestURL($search, $unit, $nl, $appid);
+		return $this->fetchWithCacheFrom($url);
+	}
+
+	private function buildRequestURL($search, $unit, $nl, $appid)
+	{
+		if (is_array($search))
+		{
+			list($lat, $lon) = $search;
+			$param = ['lat' => $lat, 'lon' => $lon];
+		}
+		elseif (is_int($search)) {
+			$this->id = $search;
+
+			$urlAdd = '/city';
+			$param = ['id' => $search];
+		}
 		else {
-			self::$url .= '/city';
-			$param = array('id' => self::$id);
+			$param = ['q' => $search];
 		}
 
-		$param = array_add($param, 'APPID', self::apiKey());
-		$param = array_add($param, 'lang', 'de');
-		$param = array_add($param, 'units', 'metric');
+		if(isset($urlAdd)) $url = $this->weeklyForecast . $urlAdd;
+		else $url = $this->weeklyForecast;
+
+		if(empty($appid)) $appid = $this->apiKey();
+		if(!empty($appid)) $param = array_add($param, 'APPID', $appid);
+		$param = array_add($param, 'lang', $nl);
+		$param = array_add($param, 'units', $unit);
 		$param = array_add($param, 'cnt', 7);
 
-		self::$url .= '?' . http_build_query($param);
+		return $url . '?' . http_build_query($param);
 	}
 
-	private static function apiKey()
+	private function apiKey()
 	{
-		return '8bf3d1154e15c3edf7ff892291deb93a';
-		//return \Config::get('admin.weather.key');
+		return getenv('WEATHER_API');
+	}
+
+	private function fetchWithCacheFrom($url)
+	{
+		return $this->fetchHandler->fetch($url);
 	}
 
 	public function __toString()
@@ -107,7 +116,7 @@ class Weather
 
 	private function onlyMax()
 	{
-		return \Config::get('admin.weather.temp') == 'max';
+		return getenv('WEATHER_MAX');
 	}
 
 
