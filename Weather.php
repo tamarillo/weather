@@ -11,15 +11,18 @@ namespace Tamarillo\Weather;
 class Weather
 {
 	/**
-	 * The Copyright http://openweathermap.org/copyright.
+	 * The Copyright http://openweathermap.org/
 	 */
 	const COPYRIGHT = "Weather data from <a href=\"http://www.openweathermap.org\">OpenWeatherMap.org</a>";
 
 	private $lat, $lon, $id, $name, $url, $data;
 	private $format;
+	private $formatter;
 	private $defaultformat = '%oneLine%';
 
-	private $fetchHandler;
+	private $curler;
+
+	private $pos = 0;
 
 
 	/**
@@ -33,20 +36,40 @@ class Weather
 	private $weeklyForecast = 'http://api.openweathermap.org/data/2.5/forecast';
 
 	public function __construct() {
-		$this->fetchHandler = new Fetcher();
+		$this->curler  = new Curler();
+		$this->formatter = new Formatter($this->data);
 	}
 
 
 	public static function getWeather($search, $unit = 'metric', $nl = 'de', $appid = '')
 	{
 		$weather = new self;
-		return $weather->getWeatherData($search, $unit, $nl, $appid);
+		$weather->getWeatherData($search, $unit, $nl, $appid);
+		return $weather;
 	}
 
 	public function getWeatherData($search, $unit = 'metric', $nl = 'de', $appid = '')
 	{
 		$url = $this->buildRequestURL($search, $unit, $nl, $appid);
-		return $this->fetchWithCacheFrom($url);
+		$this->data = json_decode($this->fetchWithCacheFrom($url));
+	}
+
+	public function geo()
+	{
+		return $this->data->city->coord;
+	}
+
+	public function weather()
+	{
+		$this->format = '%weather%';
+		return $this;
+	}
+
+	public function id()
+	{
+		if(strpos($this->format, 'city')!=FALSE) return $this->data->city->id;
+		if(!isset($this->data->list[$this->pos])) return NULL;
+		return $this->data->list[$this->pos]->weather[0]->id;
 	}
 
 	private function buildRequestURL($search, $unit, $nl, $appid)
@@ -85,7 +108,13 @@ class Weather
 
 	private function fetchWithCacheFrom($url)
 	{
-		return $this->fetchHandler->fetch($url);
+		return $this->curler->fetch($url);
+	}
+
+	public function city()
+	{
+		$this->format = '%city%';
+		return $this;
 	}
 
 	public function __toString()
@@ -101,7 +130,7 @@ class Weather
 
 	private function makeOutput()
 	{
-		return '';
+		return $this->formatter->view($this->format);
 	}
 
 	public function next()
