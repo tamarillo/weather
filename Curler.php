@@ -3,12 +3,11 @@
 namespace Tamarillo\Weather;
 
 /**
- * Class Fetcher
+ * Class Curler
  * @package Tamarillo\Weather
- *
  * @author Tobias Maxham
  */
-class Fetcher {
+class Curler {
 
 	public function fetch($url)
 	{
