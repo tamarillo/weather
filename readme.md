@@ -5,3 +5,25 @@
 Helper classes for [OpenWeatherMap](http://openweathermap.org/API).
 
 This package was once part of the DengoCMS Framework. Now it's available on the [Tamarillo projects](https://github.com/tamarillo).
+
+
+###Examples
+```php
+<?php
+
+// Composer Autoloader
+require_once 'vendor/autoload.php';
+
+// The Location for Stuttgart, Germany
+$weather = Tamarillo\Weather\Weather::getWeather([ 48.782318, 9.17702 ];
+
+echo $wether->weather()->id();    // The ID of the current weather
+
+echo $wether->city();             // The name of the City
+echo $wether->city()->id();       // The ID of the City
+var_dump($wether->geo());         // An array of the coordinations of the City
+
+echo $wether->weather();          // The current weather description
+echo $wether->weather()->icon();  // The current weather icon
+```
+
