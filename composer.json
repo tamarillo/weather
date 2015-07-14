@@ -11,17 +11,17 @@
 			"role": "Developer, Owner, Quality"
 		},
 		{
-			"name": "Tobias Maxham",
-			"email": "git2015@maxham.de",
-			"homepage": "http://maxham.de",
-			"role": "Developer"
-		},
-		{
 			"name": "Heiko Stark",
 			"email": "hstark@dengophp.de",
 			"homepage": "http://dengophp.de",
 			"role": "Developer, Owner"
-		}
+		},
+        {
+            "name": "Tobias Maxham",
+            "email": "git2015@maxham.de",
+            "homepage": "http://maxham.de",
+            "role": "Developer"
+        }
 	],
 	
 	"type": "project",
